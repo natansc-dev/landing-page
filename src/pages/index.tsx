@@ -13,9 +13,14 @@ import SectionFaq from 'components/SectionFaq'
 import Footer from 'components/Footer'
 import JsonSchema from 'components/JsonSchema'
 
-const Index = () => (
+import { GetStaticProps } from 'next'
+import { client } from 'graphql/client'
+import { getLandingPage } from 'graphql/queries/getLandingPage'
+import { LogoProps } from 'types/api'
+
+const Index = ({ data }: LogoProps) => (
   <>
-    <SectionHero />
+    <SectionHero data={data} />
     <SectionAboutProject />
     <SectionTech />
     <SectionConcepts />
@@ -29,5 +34,17 @@ const Index = () => (
     <JsonSchema />
   </>
 )
+
+export const getStaticProps: GetStaticProps = async () => {
+  const response = await client.request(getLandingPage)
+
+  const data = response.landingPage.data.attributes.logo.data[0]?.attributes
+
+  return {
+    props: {
+      data
+    }
+  }
+}
 
 export default Index
